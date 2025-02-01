@@ -1,27 +1,37 @@
 import sys
 import re
 
+if len(sys.argv) < 2:
+    print("Error: No equation provided. Please provide a polynomial equation as a command-line argument.")
+    sys.exit(1)
 # get the polynomial second or lower degree equation
 equation = sys.argv[1]
-print(equation)
+# print(equation)
 
-# parse the equation string 
-left_part, right_part = equation.split('=') # split the equation into left and right parts
+# Parse the equation string
+try:
+    left_part, right_part = equation.split('=')
+except ValueError:
+    print("Error: Invalid equation format.")
+    sys.exit(1)
 
-print(left_part)
-print(right_part)
+# print(left_part)
+# print(right_part)
 
 def parse_part(part):
-    terms = re.findall(r'([+-]?\s*\d*\.?\d*)\s*\*\s*X\^(\d+)', part)
-    print(terms)
-    parsed_terms = [(float(coef.replace(' ', '')), int(power)) for coef, power in terms]
-    return parsed_terms
+    try:
+        terms = re.findall(r'([+-]?\s*\d*\.?\d*)\s*\*\s*X\^(\d+)', part)
+        parsed_terms = [(float(coef.replace(' ', '')), int(power)) for coef, power in terms]
+        return parsed_terms
+    except Exception as e:
+        print(f"Error parsing part '{part}': {e}")
+        sys.exit(1)
 
 left_terms = parse_part(left_part)
 right_terms = parse_part(right_part)
 
-print(left_terms)
-print(right_terms)
+# print(left_terms)
+# print(right_terms)
 
 # Combine the terms
 def combine_terms(terms):
@@ -36,8 +46,8 @@ def combine_terms(terms):
 left_combined_terms = combine_terms(left_terms)
 right_combined_terms = combine_terms(right_terms)
 
-print(left_combined_terms)
-print(right_combined_terms)
+# print(left_combined_terms)
+# print(right_combined_terms)
 
 # move all the terms to the left side
 for power, coef in right_combined_terms.items():
@@ -48,7 +58,7 @@ for power, coef in right_combined_terms.items():
     else:
         left_combined_terms[power] = -coef
 
-print("===>" , left_combined_terms)
+# print("===>" , left_combined_terms)
 
 # print reduced form of the equation
 reduced_form = ' '.join([f'{coef:+} * X^{power}' for power, coef in left_combined_terms.items() if coef != 0]).replace(' +', ' + ').replace(' -', ' - ').lstrip('+ ')
@@ -69,7 +79,7 @@ if degree == 2:
     b = left_combined_terms.get(1, 0)
     c = left_combined_terms.get(0, 0)
     discriminant = calculate_discriminant(a, b, c)
-    print("Discriminant: " , discriminant)
+    # print("Discriminant: " , discriminant)
 
     if discriminant > 0:
         x1 = (-b + discriminant ** 0.5) / (2 * a)
